@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <HCSR04.h>
+#include "cmd_list.h"
 
 HCSR04 hc(6, new int[3]{ 7, 8, 9 }, 3);  //initialisation class HCSR04 (trig pin , echo pin, number of sensor)
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
@@ -119,43 +120,45 @@ void checkSerial() {
 }
 
 void DecodeInputString(String InputString) {
-  if (InputString.charAt(0) == 'm') {
 
-
-    int motorCommand = parseString(InputString, ' ', 1).toInt();
-    if (motorCommand == 0) { //forward
-      motorRun(0, 1, 1);
-      motorRun(1, 0, 1);
-    } else if (motorCommand == 1) { //backward
-      motorRun(0, 0, 1);
-      motorRun(1, 1, 1);
-    } else if (motorCommand == 2) { //left
-      motorRun(0, 1, 1);
-      motorRun(1, 1, 1);
-    } else if (motorCommand == 3) { //right
-      motorRun(0, 0, 1);
-      motorRun(1, 0, 1);
-    } else if (motorCommand == 4) { //stop
-      motorRun(0, 1, 0);
-      motorRun(1, 0, 0);
-    }
-
+  char Command = InputString.charAt(0);
+  
+  if (Command == CMD_FORWARD) { //forward
+    motorRun(0, 1, 1);
+    motorRun(1, 0, 1);
     Serial.print("motor  ");
-    Serial.println(motorCommand);
+    Serial.println(0);
+  } else if (Command == CMD_BACKWARD) { //backward
+    motorRun(0, 0, 1);
+    motorRun(1, 1, 1);
+    Serial.print("motor  ");
+    Serial.println(1);
+  } else if (Command == CMD_LEFT) { //left
+    motorRun(0, 1, 1);
+    motorRun(1, 1, 1);
+    Serial.print("motor  ");
+    Serial.println(2);
+  } else if (Command == CMD_RIGHT) { //right
+    motorRun(0, 0, 1);
+    motorRun(1, 0, 1);
+    Serial.print("motor  ");
+    Serial.println(3);
+  } else if (Command == CMD_STOP || Command == CMD_CENTRE) { //stop
+    motorRun(0, 1, 0);
+    motorRun(1, 0, 0);
+    Serial.print("motor  ");
+    Serial.println(4);
   }
 
-  if (InputString.charAt(0) == 'g') {
-    int gateCommand = parseString(InputString, ' ', 1).toInt();
-    if (gateCommand ==  1) {
+  if (Command == CMD_GATE_OPEN) {
       gateMove(1);
       Serial.print("gate  ");
-      Serial.println(gateCommand);
-    } else if (gateCommand == 0) {
+      Serial.println(1);
+  }
+  else if (Command == CMD_GATE_SHUT) {
       gateMove(0);
-    }
-    Serial.print("gate  ");
-    Serial.println(gateCommand);
-    
+      Serial.print("gate  ");
+      Serial.println(0);
   }
 
   if (InputString.charAt(0) == 'c') {
