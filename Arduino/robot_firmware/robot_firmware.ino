@@ -131,8 +131,8 @@ String parseString(String data, char separator, int index) {
 
 
 void checkSerial() {
-  if (Serial.available()) {
-    InputDataString = Serial.readString();
+  while (Serial.available()) {
+    InputDataString = Serial.readStringUntil('\n');
     DecodeInputString(InputDataString);
   }
 }
@@ -144,52 +144,45 @@ void DecodeInputString(String InputString) {
   if (Command == CMD_FORWARD) { //forward
     motorRun(0, 1, 1);
     motorRun(1, 0, 1);
-    Serial.print("motor  ");
+    Serial.print("#motor  ");
     Serial.println(0);
   } else if (Command == CMD_BACKWARD) { //backward
     motorRun(0, 0, 1);
     motorRun(1, 1, 1);
-    Serial.print("motor  ");
+    Serial.print("#motor  ");
     Serial.println(1);
   } else if (Command == CMD_LEFT) { //left
     motorRun(0, 1, 1);
     motorRun(1, 1, 1);
-    Serial.print("motor  ");
+    Serial.print("#motor  ");
     Serial.println(2);
   } else if (Command == CMD_RIGHT) { //right
     motorRun(0, 0, 1);
     motorRun(1, 0, 1);
-    Serial.print("motor  ");
+    Serial.print("#motor  ");
     Serial.println(3);
   } else if (Command == CMD_STOP || Command == CMD_CENTRE) { //stop
     motorRun(0, 1, 0);
     motorRun(1, 0, 0);
-    Serial.print("motor  ");
+    Serial.print("#motor  ");
     Serial.println(4);
-  }
-
-  if (Command == CMD_GATE_OPEN) {
-      gateMove(1);
-      Serial.print("gate  ");
-      Serial.println(1);
-  }
-  else if (Command == CMD_GATE_SHUT) {
-      gateMove(0);
-      Serial.print("gate  ");
-      Serial.println(0);
-  }
-
-  if(Command == CMD_LED)
+  } else if (Command == CMD_GATE_OPEN) {
+    gateMove(1);
+    Serial.print("#gate  ");
+    Serial.println(1);
+  } else if (Command == CMD_GATE_SHUT) {
+    gateMove(0);
+    Serial.print("#gate  ");
+    Serial.println(0);
+  } else if(Command == CMD_LED) {
     LEDcount = LED_BLINK_COUNT;
-    
-
-  if (InputString.charAt(0) == 'c') {
+    Serial.println("#LED");
+  } else if (InputString.charAt(0) == 'c') {
     int sensorIndex = parseString(InputString, ' ', 1).toInt();
     bool collision = checkCollision(sensorIndex);
     Serial.println(collision);
   }
 }
-
 
 void setup() {
   Serial.begin(9600);
