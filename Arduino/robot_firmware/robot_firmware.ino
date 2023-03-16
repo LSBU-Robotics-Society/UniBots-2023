@@ -21,8 +21,8 @@ const int PROXIMITYDISTANCE = 10;
 
 String InputDataString;
 
-#define LED_BLINK_COUNT 100
-int LEDcount = 0;
+#define LED_BLINK_COUNT 200
+int LEDcount = LED_BLINK_COUNT;
 
 void servoInit() {
   pwm.begin();
@@ -193,6 +193,7 @@ void DecodeInputString(String InputString) {
 
 void setup() {
   Serial.begin(9600);
+  Serial.setTimeout(100);
   motorsInit();
   servoInit();
   LEDinit();  
