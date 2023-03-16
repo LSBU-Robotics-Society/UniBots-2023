@@ -14,5 +14,6 @@ const char CMD_GATE_SHUT = 'g';
 
 const char CMD_CHECK_COLLISION = 'c';
 
+const char CMD_LED = 'E';
 
 #endif /* CMD_LIST_H */ 

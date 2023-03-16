@@ -21,6 +21,9 @@ const int PROXIMITYDISTANCE = 10;
 
 String InputDataString;
 
+#define LED_BLINK_COUNT 100
+int LEDcount = 0;
+
 void servoInit() {
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
@@ -33,6 +36,21 @@ void setServoAngle(uint8_t n, double angle) {
   double pulse;
   pulse = map(angle, 0, 180, USMIN, USMAX);
   pwm.writeMicroseconds(n, pulse);
+}
+
+void LEDinit(){
+  pinMode(LED_BUILTIN, OUTPUT);
+  LEDcount = 0; //Off
+}
+
+void LEDupdate(){
+  if(LEDcount > 0)
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    --LEDcount;
+  }
+  else
+    digitalWrite(LED_BUILTIN, LOW);
 }
 
 void gateMove(int up) {
@@ -161,6 +179,10 @@ void DecodeInputString(String InputString) {
       Serial.println(0);
   }
 
+  if(Command == CMD_LED)
+    LEDcount = LED_BLINK_COUNT;
+    
+
   if (InputString.charAt(0) == 'c') {
     int sensorIndex = parseString(InputString, ' ', 1).toInt();
     bool collision = checkCollision(sensorIndex);
@@ -173,8 +195,11 @@ void setup() {
   Serial.begin(9600);
   motorsInit();
   servoInit();
+  LEDinit();  
 }
 
 void loop() {
   checkSerial();
+  LEDupdate();
+  delay(1);
 }
