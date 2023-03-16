@@ -33,12 +33,24 @@ def move_stop():
     send_command(cmd_list.CMD_STOP)
 
 
+def gate_open():
+    send_command(cmd_list.CMD_GATE_OPEN)
+
+
+def gate_shut():
+    send_command(cmd_list.CMD_GATE_SHUT)
+
+
+def flash_LED():
+    send_command(cmd_list.CMD_LED)
+
+
 def send_command(command):
     if settings.USE_SIM:
         godot_interface.send_command(command)
 
     if settings.USE_SERIAL:
-        ser.write(str.encode(command))
+        ser.write(str.encode(command+'\r'+'\n'))
 
 
 def get_image():
