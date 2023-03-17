@@ -187,7 +187,10 @@ void DecodeInputString(String InputString) {
 void setup() {
   Serial.begin(9600);
   Serial.setTimeout(100);
+<<<<<<< HEAD
   Serial.println("Y");
+=======
+>>>>>>> 919f42e2312135867d531b13936eb5187c7e1c38
   motorsInit();
   servoInit();
   LEDinit();  
@@ -196,5 +199,9 @@ void setup() {
 void loop() {
   checkSerial();
   LEDupdate();
+<<<<<<< HEAD
   
+=======
+  delay(1);
+>>>>>>> 919f42e2312135867d531b13936eb5187c7e1c38
 }
