@@ -24,8 +24,9 @@ def cv_image_resize(cv_image, scale_percent):
 def image_process(cv_image):
     image_out = cv_image.copy()
 
-    find_circles(cv_image, image_out)
+    #find_circles(cv_image, image_out)
     find_apriltags(cv_image, image_out)
+    image_out = cv2.flip(image_out, 0)  # Flip vertical
 
     display(image_out)
 

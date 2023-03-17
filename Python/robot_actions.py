@@ -26,3 +26,5 @@ def dead_stop():
     rb.turn_stop()
     rb.move_stop()
 
+def get_serial():
+    return rb.get_command()

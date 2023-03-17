@@ -6,7 +6,7 @@ import cmd_list
 import serial
 
 if settings.USE_SERIAL:
-    ser = serial.Serial(settings.SERIAL_PORT)  # “9600,8,N,1”
+        ser = serial.Serial(settings.SERIAL_PORT)  # “9600,8,N,1”
 
 
 def turn_left():
@@ -33,13 +33,37 @@ def move_stop():
     send_command(cmd_list.CMD_STOP)
 
 
+def gate_open():
+    send_command(cmd_list.CMD_GATE_OPEN)
+
+
+def gate_shut():
+    send_command(cmd_list.CMD_GATE_SHUT)
+
+
+def flash_LED():
+    send_command(cmd_list.CMD_LED)
+
+
 def send_command(command):
     if settings.USE_SIM:
         godot_interface.send_command(command)
 
     if settings.USE_SERIAL:
-        ser.write(str.encode(command))
+        try:
+            ser.write(str.encode(command+'\r'+'\n'))
+        except:
+            return 0
 
+def get_command():
+    try:
+        line = ser.readline()
+        line = line.decode()
+        line = line.strip()
+    except:
+        line = ""
+
+    return line
 
 def get_image():
     if settings.USE_SIM_CAMERA:

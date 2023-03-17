@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <HCSR04.h>
+#include "cmd_list.h"
 
 HCSR04 hc(6, new int[3]{ 7, 8, 9 }, 3);  //initialisation class HCSR04 (trig pin , echo pin, number of sensor)
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
@@ -20,6 +21,9 @@ const int PROXIMITYDISTANCE = 10;
 
 String InputDataString;
 
+#define LED_BLINK_COUNT 200
+int LEDcount = LED_BLINK_COUNT;
+
 void servoInit() {
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
@@ -32,6 +36,21 @@ void setServoAngle(uint8_t n, double angle) {
   double pulse;
   pulse = map(angle, 0, 180, USMIN, USMAX);
   pwm.writeMicroseconds(n, pulse);
+}
+
+void LEDinit(){
+  pinMode(LED_BUILTIN, OUTPUT);
+  LEDcount = 0; //Off
+}
+
+void LEDupdate(){
+  if(LEDcount > 0)
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    --LEDcount;
+  }
+  else
+    digitalWrite(LED_BUILTIN, LOW);
 }
 
 void gateMove(int up) {
@@ -112,66 +131,70 @@ String parseString(String data, char separator, int index) {
 
 
 void checkSerial() {
-  if (Serial.available()) {
-    InputDataString = Serial.readString();
+  while (Serial.available()) {
+    InputDataString = Serial.readStringUntil('\n');
     DecodeInputString(InputDataString);
   }
 }
 
 void DecodeInputString(String InputString) {
-  if (InputString.charAt(0) == 'm') {
 
-
-    int motorCommand = parseString(InputString, ' ', 1).toInt();
-    if (motorCommand == 0) { //forward
-      motorRun(0, 1, 1);
-      motorRun(1, 0, 1);
-    } else if (motorCommand == 1) { //backward
-      motorRun(0, 0, 1);
-      motorRun(1, 1, 1);
-    } else if (motorCommand == 2) { //left
-      motorRun(0, 1, 1);
-      motorRun(1, 1, 1);
-    } else if (motorCommand == 3) { //right
-      motorRun(0, 0, 1);
-      motorRun(1, 0, 1);
-    } else if (motorCommand == 4) { //stop
-      motorRun(0, 1, 0);
-      motorRun(1, 0, 0);
-    }
-
-    Serial.print("motor  ");
-    Serial.println(motorCommand);
-  }
-
-  if (InputString.charAt(0) == 'g') {
-    int gateCommand = parseString(InputString, ' ', 1).toInt();
-    if (gateCommand ==  1) {
-      gateMove(1);
-      Serial.print("gate  ");
-      Serial.println(gateCommand);
-    } else if (gateCommand == 0) {
-      gateMove(0);
-    }
-    Serial.print("gate  ");
-    Serial.println(gateCommand);
-    
-  }
-
-  if (InputString.charAt(0) == 'c') {
+  char Command = InputString.charAt(0);
+  
+  if (Command == CMD_FORWARD) { //forward
+    motorRun(0, 1, 1);
+    motorRun(1, 0, 1);
+    Serial.print("#motor  ");
+    Serial.println(0);
+  } else if (Command == CMD_BACKWARD) { //backward
+    motorRun(0, 0, 1);
+    motorRun(1, 1, 1);
+    Serial.print("#motor  ");
+    Serial.println(1);
+  } else if (Command == CMD_LEFT) { //left
+    motorRun(0, 1, 1);
+    motorRun(1, 1, 1);
+    Serial.print("#motor  ");
+    Serial.println(2);
+  } else if (Command == CMD_RIGHT) { //right
+    motorRun(0, 0, 1);
+    motorRun(1, 0, 1);
+    Serial.print("#motor  ");
+    Serial.println(3);
+  } else if (Command == CMD_STOP || Command == CMD_CENTRE) { //stop
+    motorRun(0, 1, 0);
+    motorRun(1, 0, 0);
+    Serial.print("#motor  ");
+    Serial.println(4);
+  } else if (Command == CMD_GATE_OPEN) {
+    gateMove(1);
+    Serial.print("#gate  ");
+    Serial.println(1);
+  } else if (Command == CMD_GATE_SHUT) {
+    gateMove(0);
+    Serial.print("#gate  ");
+    Serial.println(0);
+  } else if(Command == CMD_LED) {
+    LEDcount = LED_BLINK_COUNT;
+    Serial.println("#LED");
+  } else if (InputString.charAt(0) == 'c') {
     int sensorIndex = parseString(InputString, ' ', 1).toInt();
     bool collision = checkCollision(sensorIndex);
     Serial.println(collision);
   }
 }
 
-
 void setup() {
   Serial.begin(9600);
+  Serial.setTimeout(100);
+  Serial.println("Y");
   motorsInit();
   servoInit();
+  LEDinit();  
 }
 
 void loop() {
   checkSerial();
+  LEDupdate();
+  
 }
