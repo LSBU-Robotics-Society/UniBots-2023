@@ -50,14 +50,10 @@ def send_command(command):
         godot_interface.send_command(command)
 
     if settings.USE_SERIAL:
-<<<<<<< HEAD
         try:
             ser.write(str.encode(command+'\r'+'\n'))
         except:
             return 0
-=======
-        ser.write(str.encode(command+'\r'+'\n'))
->>>>>>> 919f42e2312135867d531b13936eb5187c7e1c38
 
 def get_command():
     try:
