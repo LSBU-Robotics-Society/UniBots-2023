@@ -45,6 +45,10 @@ def flash_LED():
     send_command(cmd_list.CMD_LED)
 
 
+def check_collision(index)
+    send_command(cmd_list.CMD_CHECK_COLLISION + str(" ") + str(index))
+
+
 def send_command(command):
     if settings.USE_SIM:
         godot_interface.send_command(command)
