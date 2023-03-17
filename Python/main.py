@@ -3,6 +3,7 @@ import threading
 from robot_actions import *
 import serial.tools.list_ports
 import os
+import cmd_list
 
 
 
@@ -15,7 +16,7 @@ def serial_thread():
         if len(myports) == 0:
             os.system("sudo shutdown now")
         else:
-            if get_serial() == "Y":
+            if get_serial() == cmd_list.CMD_RESET:
                 t0 = time.perf_counter()
                 #start_command = 1
     

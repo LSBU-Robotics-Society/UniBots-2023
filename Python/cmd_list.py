@@ -13,3 +13,6 @@ CMD_GATE_SHUT = "g"
 CMD_CHECK_COLLISION = "c"
 
 CMD_LED = "E"
+
+CMD_RESET = 'Y';
+CMD_HEARTBEAT = 'h';
