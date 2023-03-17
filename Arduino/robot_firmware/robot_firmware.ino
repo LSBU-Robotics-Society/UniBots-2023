@@ -190,9 +190,14 @@ void DecodeInputString(String InputString) {
   } else if(Command == CMD_LED) {
     LEDcount = LED_BLINK_COUNT;
     Serial.println("#LED");
-  } else if (InputString.charAt(0) == 'c') {
+  } else if (InputString.charAt(0) == CMD_CHECK_COLLISION) {
     int sensorIndex = parseString(InputString, ' ', 1).toInt();
     bool collision = checkCollision(sensorIndex);
+    //Respond, example query "c 3" results in "c 3 0" for no collision
+    Serial.print(CMD_CHECK_COLLISION);
+    Serial.print(' ');
+    Serial.print(sensorIndex);
+    Serial.print(' ');
     Serial.println(collision);
   }
 }
