@@ -16,4 +16,8 @@ const char CMD_CHECK_COLLISION = 'c';
 
 const char CMD_LED = 'E';
 
+const char CMD_RESET = 'r';
+const char CMD_HEARTBEAT = 'h';
+
+
 #endif /* CMD_LIST_H */ 

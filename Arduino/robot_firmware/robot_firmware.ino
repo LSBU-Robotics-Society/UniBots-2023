@@ -24,6 +24,9 @@ String InputDataString;
 #define LED_BLINK_COUNT 200
 int LEDcount = LED_BLINK_COUNT;
 
+#define HEARTBEAT_COUNT 1000
+int heartbeat = 0;
+
 void servoInit() {
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
@@ -51,6 +54,16 @@ void LEDupdate(){
   }
   else
     digitalWrite(LED_BUILTIN, LOW);
+}
+
+void heartbeat_update(){
+  if(heartbeat > HEARTBEAT_COUNT)
+  {
+    heartbeat = 0;
+    Serial.println(CMD_HEARTBEAT);
+  }
+  else
+    heartbeat++;
 }
 
 void gateMove(int up) {
@@ -187,21 +200,15 @@ void DecodeInputString(String InputString) {
 void setup() {
   Serial.begin(9600);
   Serial.setTimeout(100);
-<<<<<<< HEAD
-  Serial.println("Y");
-=======
->>>>>>> 919f42e2312135867d531b13936eb5187c7e1c38
   motorsInit();
   servoInit();
-  LEDinit();  
+  LEDinit();
+  Serial.println(CMD_RESET);
 }
 
-void loop() {
+void loop() {  
   checkSerial();
   LEDupdate();
-<<<<<<< HEAD
-  
-=======
+  heartbeat_update();
   delay(1);
->>>>>>> 919f42e2312135867d531b13936eb5187c7e1c38
 }
