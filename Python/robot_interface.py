@@ -4,9 +4,12 @@ import camera
 import settings
 import cmd_list
 import serial
+import robot_state
+import time
 
 if settings.USE_SERIAL:
         ser = serial.Serial(settings.SERIAL_PORT)  # “9600,8,N,1”
+        ser.timeout = 100/1000
 
 
 def turn_left():
@@ -45,8 +48,27 @@ def flash_LED():
     send_command(cmd_list.CMD_LED)
 
 
-def check_collision(index)
-    send_command(cmd_list.CMD_CHECK_COLLISION + str(" ") + str(index))
+def check_collision():
+    send_command(cmd_list.CMD_CHECK_COLLISION + str(" ") + str(settings.SENSOR_ID_LEFT))
+    time.sleep(0.1)
+    send_command(cmd_list.CMD_CHECK_COLLISION + str(" ") + str(settings.SENSOR_ID_RIGHT))
+    time.sleep(0.1)
+    send_command(cmd_list.CMD_CHECK_COLLISION + str(" ") + str(settings.SENSOR_ID_BACK))
+    time.sleep(0.1)
+
+def process_collision_response(str):
+    s = str.split(" ")
+    if (s[0] != cmd_list.CMD_CHECK_COLLISION):
+        return
+
+    id = int(s[1])
+    state = bool(s[2])
+    if(id == settings.SENSOR_ID_LEFT):
+        robot_state.collision_left = state
+    elif(id == settings.SENSOR_ID_RIGHT):
+        robot_state.collision_right = state
+    elif (id == settings.SENSOR_ID_BACK):
+        robot_state.collision_back = state
 
 
 def send_command(command):
@@ -64,6 +86,8 @@ def get_command():
         line = ser.readline()
         line = line.decode()
         line = line.strip()
+        if(line[0] == cmd_list.CMD_CHECK_COLLISION):
+            process_collision_response(line)
     except:
         line = ""
 
