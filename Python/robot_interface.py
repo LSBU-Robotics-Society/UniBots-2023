@@ -61,8 +61,12 @@ def process_collision_response(str):
     if (s[0] != cmd_list.CMD_CHECK_COLLISION):
         return
 
-    id = int(s[1])
-    state = bool(s[2])
+    id = s[1]
+    if s[2] == '0':
+        state = False
+    else:
+        state = True
+    
     if(id == settings.SENSOR_ID_LEFT):
         robot_state.collision_left = state
     elif(id == settings.SENSOR_ID_RIGHT):
