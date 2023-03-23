@@ -205,7 +205,7 @@ void DecodeInputString(String InputString) {
 }
 
 void setup() {
-  delay(500);
+  delay(100);
   Serial.begin(9600);
   Serial.setTimeout(100);
   motorsInit();
