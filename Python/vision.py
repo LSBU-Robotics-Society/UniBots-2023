@@ -5,7 +5,7 @@ import apriltag
 last_april_tags = []
 
 
-def robot_to_cv_image(robot_image):
+def sim_to_cv_image(robot_image):
     npimage = np.frombuffer(bytearray(robot_image), dtype="uint8")
     cv_image_orig = cv2.imdecode(npimage, cv2.IMREAD_COLOR)
     cv_image = cv2.flip(cv_image_orig, 0)  # Flip vertical

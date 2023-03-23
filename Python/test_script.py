@@ -11,11 +11,15 @@ time.sleep(2)
 rb.flash_LED()
 time.sleep(2)
 
+print("Camera")
+image = rb.get_image()
+vision.image_process(image)
+
 print("Collision")
 while not rb.get_command() == "":
     pass
 
-for i in range(20):
+for i in range(5):
     rb.check_collision()
     time.sleep(0.5)
 

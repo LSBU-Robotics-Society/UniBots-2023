@@ -8,8 +8,7 @@ import robot_state
 import time
 
 if settings.USE_SERIAL:
-        ser = serial.Serial(settings.SERIAL_PORT)  # “9600,8,N,1”
-        ser.timeout = 100/1000
+    ser = serial.Serial(settings.SERIAL_PORT, 9600, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE, 0.01)
 
 
 def turn_left():
@@ -90,8 +89,14 @@ def get_command():
         line = ser.readline()
         line = line.decode()
         line = line.strip()
+
+        if settings.DEBUG_SHOW_SERIAL:
+            print(line)
+
         if(line[0] == cmd_list.CMD_CHECK_COLLISION):
             process_collision_response(line)
+        elif(line[0] == cmd_list.CMD_RESET):
+            robot_state.reset_flag = True
     except:
         line = ""
 
@@ -100,6 +105,6 @@ def get_command():
 def get_image():
     if settings.USE_SIM_CAMERA:
         png_image = godot_interface.get_image()
-        return vision.robot_to_cv_image(png_image)
+        return vision.sim_to_cv_image(png_image)
     else:
         return camera.get_image()

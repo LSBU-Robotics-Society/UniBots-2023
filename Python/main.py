@@ -1,58 +1,62 @@
 import time
 import threading
+
+import robot_actions
+import robot_state
 from robot_actions import *
 import serial.tools.list_ports
 import os
 import cmd_list
 
 
-
 t0 = time.perf_counter()
 
-def serial_thread():
-    global t0
+
+def port_checker():
     while True:
         myports =[tuple(p) for p in list(serial.tools.list_ports.comports())]
         if len(myports) == 0:
             os.system("sudo shutdown now")
-        else:
-            if get_serial() == cmd_list.CMD_RESET:
-                t0 = time.perf_counter()
-                #start_command = 1
+
+
+def serial_thread():
+    global t0
+    while True:
+        rb.get_command()
+
+        if robot_state.reset_flag:
+            t0 = time.perf_counter()
+            robot_state.reset_flag = False
+            robot_state.current_state = robot_state.FIRST_MOVE
+            print("Reset")
+            # start_command = 1
     
 def robot_thread():
     global t0
     while True:
-        image = rb.get_image()
-        vision.image_process(image)
-        print(time.perf_counter()-t0)
-        time.sleep(1/1000)
-        if time.perf_counter() > (t0+120):
+        # Decide what over-riding state to be in.
+        if time.perf_counter() > (t0 + 120):
             dead_stop()
-        elif time.perf_counter() >= (t0+10):
-            move_to_home()
-        elif time.perf_counter() < (t0+2):
-            rb.turn_stop()
-            rb.move_forward()
-        elif time.perf_counter() < (t0 + 3.5):
-            rb.move_stop()
-            rb.turn_left()
-        elif time.perf_counter() < (t0 + 5):
-            rb.turn_stop()
-            rb.move_forward()
-        elif time.perf_counter() < (t0 + 6.5):
-            rb.move_stop()
-            rb.turn_right()
-        elif time.perf_counter() < (t0 + 8.5):
-            rb.turn_stop()
-            rb.move_forward()
-        elif time.perf_counter() < (t0 + 10):
-            rb.move_stop()
-            rb.turn_stop()
-        else:
-            dead_stop()
+        elif time.perf_counter() > (t0 + 90):
+            robot_actions.move_to_home()
+        elif (robot_state.current_state == robot_state.NULL) and (time.perf_counter() > (t0 + 20)):
+            robot_state.current_state = robot_state.FIRST_MOVE
 
+        # Act on the stats with current state
+        if robot_state.current_state == robot_state.FIRST_MOVE:
+            robot_actions.first_move()
+            robot_state.current_state = robot_state.ROAM
+        elif robot_state.current_state == robot_state.ROAM:
+            robot_actions.roam()
+
+        print(time.perf_counter() - t0)
+
+
+# Threads
 serialThread = threading.Thread(target=serial_thread)
-robotThread  = threading.Thread(target=robot_thread)
+robotThread = threading.Thread(target=robot_thread)
+portcheckerThread = threading.Thread(target=port_checker)
 serialThread.start()
 robotThread.start()
+portcheckerThread.start()
+

@@ -14,3 +14,8 @@ SENSOR_ID_BACK = '2'
 
 # Simulator settings
 SIM_WS_ADDRESS = "ws://localhost:9080"  # This is the address of the simulator
+
+TIME_360_DEGREE = 1.5 # Time in seconds for a 360 degree turn.
+TIME_1M = 1.7 #Time for 1 m of forward movement, ~60 cm in 1 second
+
+DEBUG_SHOW_SERIAL = False
