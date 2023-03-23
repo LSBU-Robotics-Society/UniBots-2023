@@ -60,3 +60,7 @@ serialThread.start()
 robotThread.start()
 portcheckerThread.start()
 
+serialThread.join()
+robotThread.join()
+portcheckerThread.join()
+
