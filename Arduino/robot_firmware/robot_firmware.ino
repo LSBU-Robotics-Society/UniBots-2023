@@ -17,6 +17,8 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define motor2Pin1 4
 #define motor2Pin2 5
 
+const bool SEND_HEARTBEAT = false;
+
 const int PROXIMITYDISTANCE = 10;
 
 String InputDataString;
@@ -215,6 +217,7 @@ void setup() {
 void loop() {  
   checkSerial();
   LEDupdate();
-  heartbeat_update();
+  if(SEND_HEARTBEAT)
+    heartbeat_update();
   delay(1);
 }
